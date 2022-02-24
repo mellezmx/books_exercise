@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <link type="text/html" rel="stylesheet" href="style.css">
+            <title>Books</title>
+        </head>
+        <body>
+            <h1>Search for a book</h1>
+            <p>Enter all the params you know about the book you are searching for</p>
+            <label for="isbn">ISBN:</label>
+            <input type="text" id="isbn" name="isbn"><br><br>
+
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title"><br><br>
+
+            <label for="author">Author:</label>
+            <input type="text" id="author" name="author"><br><br>
+
+            <label for="publishedDate">Date of publication:</label>
+            <input type="text" id="publishedDate" name="publishedDate"><br><br>
+
+            <button onclick="searchBooks()">Submit</button>
+
+            <div>
+                <div class="row" id="seearchResult">
+                </div>
+            </div>
+
+            <script>
+
+                function searchBooks() {
+                    document.getElementById('seearchResult').innerHTML = ''
+                   isbn = document.getElementById("isbn").value
+                   title = document.getElementById("title").value
+                   author = document.getElementById("author").value
+                   publishedDate = document.getElementById("publishedDate").value
+                   const xhttp = new XMLHttpRequest()
+                   xhttp.open("GET", `http://localhost:3000/search?isbn=${isbn}&title=${title}&author=${author}&publishedDate=${publishedDate}`, false);
+                   xhttp.send();
+
+                   const booksresult = JSON.parse(xhttp.responseText);
+
+                   for (let book of booksresult) {
+                        const x = `
+                            <div class="col-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h3 class="card-title">isbn: ${book.isbn}</h5>
+                                        <h3 class="card-title">${book.title}</h3>
+
+                                        <div>Author: ${book.author}</div>
+                                        <div>Published Date: ${book.publishedDate}</div>
+                                        <div>Price: ${book.price}</div>
+                                        <div>Still in stock: ${book.stock}</div>
+                                        <hr>
+                                    </div>
+                                </div>
+                            </div>`
+
+                    document.getElementById('seearchResult').innerHTML = document.getElementById('seearchResult').innerHTML + x;
+                    }
+            }
+            </script>
+
+        </body>

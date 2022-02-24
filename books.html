@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <link type="text/html" rel="stylesheet" href="style.css">
+            <title>Books</title>
+        </head>
+        <body>
+            <div class="container">
+                <hr>
+                <h1>List of books</h1>
+                <hr>
+                <div>
+                    <div class="row" id="books">
+                    </div>
+                </div>
+            </div>
+
+            <script>
+
+const increaseQuantity = (isbn) => {
+    const xhttp = new XMLHttpRequest()
+
+xhttp.open("GET", `http://localhost:3000/book/${isbn}`, false);
+xhttp.send();
+let book = JSON.parse(xhttp.responseText);
+
+book.stock = parseInt(book.stock) + 1;
+
+xhttp.open("PUT", `http://localhost:3000/book/${isbn}`, false);
+xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+xhttp.send(JSON.stringify(book));
+location.reload();
+}
+
+const decreaseQuantity = (isbn) => {
+    const xhttp = new XMLHttpRequest()
+
+    xhttp.open("GET", `http://localhost:3000/book/${isbn}`, false);
+    xhttp.send();
+    let book = JSON.parse(xhttp.responseText);
+
+    book.stock = parseInt(book.stock) - 1;
+ 
+    xhttp.open("PUT", `http://localhost:3000/book/${isbn}`, false);
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.send(JSON.stringify(book));
+    location.reload();
+}
+
+const deleteBook = (isbn) => {
+    const xhttp = new XMLHttpRequest();
+
+    xhttp.open("DELETE", `http://localhost:3000/book/${isbn}`, false);
+    xhttp.send();
+    location.reload();
+}
+
+    const loadBooks = () => {
+    const xhttp = new XMLHttpRequest();
+
+    xhttp.open("GET", "http://localhost:3000/books", false);
+    xhttp.send();
+
+    const books = JSON.parse(xhttp.responseText);
+
+    for (let book of books) {
+        const x = `
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">${book.title}</h3>
+
+                        <div>Author: ${book.author}</div>
+                        <div>Published Date: ${book.publishedDate}</div>
+                        <div>Price: ${book.price}</div>
+                        <div>Still in stock: ${book.stock}</div>
+
+                        <button type="button" class="btn btn-danger" onClick="deleteBook(${book.isbn})">Delete</button>
+                        <button type="button" onClick="decreaseQuantity(${book.isbn})"> - </button>
+                        <button type="button" onClick="increaseQuantity(${book.isbn})"> + </button>
+                        <hr>
+
+                    </div>
+                </div>
+            </div>
+        `
+
+        document.getElementById('books').innerHTML = document.getElementById('books').innerHTML + x;
+    }
+}
+
+loadBooks();
+            </script>
+        </body>
